@@ -58,9 +58,9 @@ class Agent():
                                     self.network, 
                                     self.tau)
             batch_size = self.replay_buffer.minibatch_size
-            target_q_actions = np.array(self.network(np.array(states)))
+            target_q_actions = np.array(self.network(states))
             target_q_actions[range(batch_size), actions] = target_q
-            self.network.train_on_batch(np.array(states), target_q_actions)
+            self.network.train_on_batch(states, target_q_actions)
 
     def end(self, reward):
         self.sum_rewards += reward

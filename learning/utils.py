@@ -13,7 +13,6 @@ def softmax(action_values, tau=1.0):
     return action_probs
 
 def get_target_q(states, next_states, actions, rewards, discount, terminals, network, tau):
-    # conversion to numpy arrays for calculations
     actions_q_next = network(next_states)
     probs_mat = softmax(actions_q_next, tau=tau)
     expected_q_next = np.sum(probs_mat * actions_q_next, axis=1)*(1 - terminals)
