@@ -23,7 +23,7 @@ agent_config = {
     },
     "num_replay_per_step": 4,
     "gamma": 0.99,
-    "tau": 0.01,
+    "tau": 0.05,
     "seed": 0
 }
 agent = Agent(agent_config)

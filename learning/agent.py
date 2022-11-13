@@ -59,7 +59,7 @@ class Agent():
                                     self.tau)
             batch_size = self.replay_buffer.minibatch_size
             target_q_actions = np.array(self.network(np.array(states)))
-            target_q_actions[range(batch_size), actions] = target_q[: np.newaxis]
+            target_q_actions[range(batch_size), actions] = target_q
             self.network.train_on_batch(np.array(states), target_q_actions)
 
     def end(self, reward):
