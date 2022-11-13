@@ -6,10 +6,7 @@ from learning.utils import *
 from copy import deepcopy
 
 class Agent():
-    def __init__(self):
-        self.name = "expected_sarsa_agent"
-        
-    def init(self, agent_config):
+    def __init__(self, agent_config):
         self.replay_buffer = ReplayBuffer(**agent_config["replay_buffer_config"])
         self.network = ActionValue(**agent_config['network_config'])
         self.network.compile(optimizer='adam', loss=td_error)
@@ -45,7 +42,6 @@ class Agent():
             self.learn()
         self.state = next_state
         self.action = self.pick_action(next_state)
-        
         return self.action
 
     def learn(self):
@@ -63,7 +59,7 @@ class Agent():
             batch_size = self.replay_buffer.minibatch_size
             target_q_actions = np.zeros((batch_size, self.num_actions))
             target_q_actions[range(batch_size), actions] = target_q
-            self.network.train_on_batch(np.array(states), target_q_actions)
+            loss = self.network.train_on_batch(np.array(states), target_q_actions)
 
     def end(self, reward):
         self.sum_rewards += reward
@@ -72,7 +68,6 @@ class Agent():
         self.replay_buffer.append(self.state, self.action, reward, True, state)
         if self.replay_buffer.size() > self.replay_buffer.minibatch_size:
             self.learn()
-        print("Terminal state reached. Episode reward: {}, Episode steps: {}".format(self.sum_rewards, self.episode_steps))
         
     def message(self, message):
         if message == "get_sum_reward":

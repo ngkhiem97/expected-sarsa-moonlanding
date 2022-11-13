@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 
 def softmax(action_values, tau=1.0):
     preferences = action_values / tau
@@ -27,4 +28,4 @@ def get_target_q(states, next_states, actions, rewards, discount, terminals, net
     return target_q
 
 def td_error(y, y_hat):
-    return y_hat - y
+    return tf.where(y_hat != 0, y_hat - y, 0)

@@ -3,6 +3,8 @@ from learning.agent import Agent
 import numpy as np
 import tensorflow as tf
 
+EPOCH = 300
+
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
 env = gym.make('LunarLander-v2')
@@ -24,14 +26,15 @@ agent_config = {
     "tau": 0.01,
     "seed": 0
 }
-agent = Agent()
-agent.init(agent_config)
+agent = Agent(agent_config)
 action = agent.start(env.reset())
 
-while True:
+for epoch in range(EPOCH):
     env.render()
     observation, reward, done, info = env.step(action)
     if done:
         agent.end(reward)
-        break
+        action = agent.start(env.reset())
+        print("Epoch: {}, Reward: {}, Steps: {}".format(epoch, agent.sum_rewards, agent.episode_steps))
+        continue
     action = agent.step(reward, observation)
