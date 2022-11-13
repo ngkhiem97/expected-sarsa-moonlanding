@@ -1,6 +1,5 @@
 from learning.memory import ReplayBuffer
 from learning.models import ActionValue
-from tensorflow.keras.optimizers import Adam
 import numpy as np
 from learning.utils import *
 from copy import deepcopy
@@ -47,7 +46,9 @@ class Agent():
     def learn(self):
         for _ in range(self.num_replay):
             experiences = self.replay_buffer.sample()
-            states, actions, rewards, terminals, next_states = zip(*experiences)
+            states, actions, rewards, terminals, next_states = map(np.array, zip(*experiences))
+            states = states.reshape(len(experiences), -1)
+            next_states = next_states.reshape(len(experiences), -1)
             target_q = get_target_q(states, 
                                     next_states, 
                                     actions, 
@@ -57,9 +58,9 @@ class Agent():
                                     self.network, 
                                     self.tau)
             batch_size = self.replay_buffer.minibatch_size
-            target_q_actions = np.zeros((batch_size, self.num_actions))
-            target_q_actions[range(batch_size), actions] = target_q
-            loss = self.network.train_on_batch(np.array(states), target_q_actions)
+            target_q_actions = np.array(self.network(np.array(states)))
+            target_q_actions[range(batch_size), actions] = target_q[: np.newaxis]
+            self.network.train_on_batch(np.array(states), target_q_actions)
 
     def end(self, reward):
         self.sum_rewards += reward
